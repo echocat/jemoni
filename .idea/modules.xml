@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/org.echocat.jemoni.iml" filepath="$PROJECT_DIR$/org.echocat.jemoni.iml" />
+      <module fileurl="file://$PROJECT_DIR$/carbon/org.echocat.jemoni.carbon.iml" filepath="$PROJECT_DIR$/carbon/org.echocat.jemoni.carbon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jmx/org.echocat.jemoni.jmx.iml" filepath="$PROJECT_DIR$/jmx/org.echocat.jemoni.jmx.iml" />
+    </modules>
+  </component>
+</project>
+

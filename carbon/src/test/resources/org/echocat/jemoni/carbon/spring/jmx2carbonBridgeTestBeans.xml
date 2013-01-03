@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ **** BEGIN LICENSE BLOCK *****
+  ~
+  ~ Version: MPL 2.0
+  ~
+  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~
+  ~ **** END LICENSE BLOCK *****
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:j2c="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+       xmlns:j2cr="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon4spring.xsd https://jemoni.echocat.org/schemas/carbon4spring-1.0.xsd
+                           https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd https://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd">
+
+    <bean id="classLoader" class="org.echocat.jemoni.carbon.spring.TestClassLoader" />
+
+    <j2c:carbonWriter id="carbonWriter" address="localhost:666" />
+
+    <j2c:jmx2carbonBridge id="bridge1" writer-ref="carbonWriter" pathPrefix="foo." classLoader-ref="classLoader">
+        <j2cr:rules>
+            <j2cr:rule name="rule1" updateEvery="1s">
+                <j2cr:include pattern="/objecti11.*/">
+                    <j2cr:attribute pattern="/attributei111.*/"/>
+                    <j2cr:attribute pattern="/attributei112.*/"/>
+                </j2cr:include>
+                <j2cr:include pattern="/object12.*/">
+                    <j2cr:attribute pattern="/attributei121.*/"/>
+                    <j2cr:attribute pattern="/attributei122.*/"/>
+                </j2cr:include>
+                <j2cr:exclude pattern="/objecte11.*/">
+                    <j2cr:attribute pattern="/attributee111.*/"/>
+                    <j2cr:attribute pattern="/attributee112.*/"/>
+                </j2cr:exclude>
+                <j2cr:exclude pattern="/object12.*/">
+                    <j2cr:attribute pattern="/attributee121.*/"/>
+                    <j2cr:attribute pattern="/attributee122.*/"/>
+                </j2cr:exclude>
+            </j2cr:rule>
+            <j2cr:rule name="rule2" updateEvery="2s">
+                <j2cr:include pattern="/objecti21.*/">
+                    <j2cr:attribute pattern="/attributei211.*/"/>
+                    <j2cr:attribute pattern="/attributei212.*/"/>
+                </j2cr:include>
+                <j2cr:include pattern="/object22.*/">
+                    <j2cr:attribute pattern="/attributei221.*/"/>
+                    <j2cr:attribute pattern="/attributei222.*/"/>
+                </j2cr:include>
+                <j2cr:exclude pattern="/objecte21.*/">
+                    <j2cr:attribute pattern="/attributee211.*/"/>
+                    <j2cr:attribute pattern="/attributee212.*/"/>
+                </j2cr:exclude>
+                <j2cr:exclude pattern="/object22.*/">
+                    <j2cr:attribute pattern="/attributee221.*/"/>
+                    <j2cr:attribute pattern="/attributee222.*/"/>
+                </j2cr:exclude>
+            </j2cr:rule>
+        </j2cr:rules>
+    </j2c:jmx2carbonBridge>
+
+    <j2c:jmx2carbonBridge writer-ref="carbonWriter" />
+
+</beans>

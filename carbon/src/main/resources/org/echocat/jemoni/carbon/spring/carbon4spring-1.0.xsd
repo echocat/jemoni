@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ **** BEGIN LICENSE BLOCK *****
+  ~
+  ~ Version: MPL 2.0
+  ~
+  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~
+  ~ **** END LICENSE BLOCK *****
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<xsd:schema version="1.0"
+            targetNamespace="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+            xmlns="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            xmlns:j2cr="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd"
+            elementFormDefault="qualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.0.xsd" />
+    <xsd:import namespace="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd" schemaLocation="https://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd" />
+
+    <xsd:element name="carbonWriter">
+        <xsd:annotation>
+            <xsd:documentation>Is used to write measure points to a carbon server.</xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.echocat.jemoni.carbon.CarbonWriter" identifier="@id" />
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="optional" default="org.echocat.jemoni.carbon.CarbonWriter">
+                <xsd:annotation>
+                    <xsd:documentation>Id under which this writer will be present in the applicationContext.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="address" type="addressType" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>Host to write the measure points to. Expected format: <code>&lt;hostname&gt;:&lt;port&gt;</code></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maxBufferLifetime" type="durationType" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Host to write the measure points to. Expected format: <code>&lt;hostname&gt;:&lt;port&gt;</code></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="charset" type="xsd:normalizedString" use="optional" default="UTF-8">
+                <xsd:annotation>
+                    <xsd:documentation>Charset to encode the names of nodes with.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="jmx2carbonBridge">
+        <xsd:annotation>
+            <xsd:documentation>This is the real JMX to Carbon bridge. It requires a carbon writer to work.</xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.echocat.jemoni.carbon.jmx.Jmx2CarbonBridge" identifier="@id" />
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="j2cr:rules" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:string" use="optional" default="org.echocat.jemoni.carbon.jmx.Jmx2CarbonBridge">
+                <xsd:annotation>
+                    <xsd:documentation>Id under which this writer will be present in the applicationContext.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="writer-ref" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>Carbon writer which is used to write the recorded measure points to.</xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation>
+                            <tool:expected-type type="org.echocat.jemoni.carbon.CarbonWriter" />
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="jmxRegistry-ref" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Is used to get all registered JMX beans from. <code>jmxRegistry-ref</code> and <code>mBeanServer-ref</code> could not used at the same time.</xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation>
+                            <tool:expected-type type="org.echocat.jemoni.jmx.JmxRegistry" />
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mBeanServer-ref" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Is used to get all registered JMX beans from. <code>jmxRegistry-ref</code> and <code>mBeanServer-ref</code> could not used at the same time.</xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation>
+                            <tool:expected-type type="javax.management.MBeanServer" />
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="classLoader-ref" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Is used to resolve the all management types with.</xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation>
+                            <tool:expected-type type="java.lang.ClassLoader" />
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="pathPrefix" type="pathType" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Will be prepended to the transmitted path of the measure point. By default this is the current hostname.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="pathType">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[a-zA-Z0-9_\-.]+" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="addressType">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[a-zA-Z0-9_\-.:]+:\d+" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="durationType">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="(\d+(|w|d|h|m|s|S|ms)\s*)+" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+</xsd:schema>
+

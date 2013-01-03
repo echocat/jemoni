@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ **** BEGIN LICENSE BLOCK *****
+  ~
+  ~ Version: MPL 2.0
+  ~
+  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~
+  ~ **** END LICENSE BLOCK *****
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:j2c="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon4spring.xsd https://jemoni.echocat.org/schemas/carbon4spring-1.0.xsd">
+
+    <!-- We do not call the init and destroy methods in the test - we only want to know that the properties right set. -->
+
+    <j2c:carbonWriter address="localhost:667" />
+
+    <j2c:carbonWriter id="xxx" address="localhost:666" charset="ISO-8859-15" maxBufferLifetime="666h" />
+
+</beans>
