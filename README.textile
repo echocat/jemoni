@@ -50,6 +50,8 @@ h1. Carbon
 
 ...or _Graphite_ is a tool to visualize measure points. It could be used to visualize performance data of websites, memory usage, ... "Visit the Graphite website to get in touch with it.":http://graphite.wikidot.com/
 
+"!http://graphite.wdfiles.com/local--files/screen-shots/graphite_fullscreen_800.png!":http://graphite.wikidot.com/
+
 h2. Writer
 
 The first important tool is the @CarbonWriter@ to write measure points to a carbon server.
