@@ -14,9 +14,9 @@
 
 package org.echocat.jemoni.carbon.spring;
 
-import com.sun.istack.internal.Nullable;
 import org.echocat.jemoni.carbon.jmx.configuration.Configuration;
 
+import javax.annotation.Nullable;
 import java.beans.PropertyEditorSupport;
 
 import static org.echocat.jemoni.carbon.jmx.configuration.RulesMarshaller.marshall;
