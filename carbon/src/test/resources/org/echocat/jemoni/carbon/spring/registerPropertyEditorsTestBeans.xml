@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ **** BEGIN LICENSE BLOCK *****
+  ~
+  ~ Version: MPL 2.0
+  ~
+  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~
+  ~ **** END LICENSE BLOCK *****
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:carbon="https://jemoni.echocat.org/schemas/carbon.xsd"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon.xsd https://jemoni.echocat.org/schemas/carbon-1.0.xsd">
+
+    <carbon:registerPropertyEditors />
+
+    <carbon:writer id="writer" address="localhost:6666" />
+
+    <bean id="bridge" class="org.echocat.jemoni.carbon.jmx.Jmx2CarbonBridge"
+        c:carbonWriter-ref="writer">
+        <property name="configuration"><value><![CDATA[
+            <configuration xmlns="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd">
+                <rule name="rule1" updateEvery="1s">
+                    <include pattern="/objecti11.*/">
+                        <attribute pattern="/attributei111.*/"/>
+                        <attribute pattern="/attributei112.*/"/>
+                    </include>
+                    <include pattern="/object12.*/">
+                        <attribute pattern="/attributei121.*/"/>
+                        <attribute pattern="/attributei122.*/"/>
+                    </include>
+                    <exclude pattern="/objecte11.*/">
+                        <attribute pattern="/attributee111.*/"/>
+                        <attribute pattern="/attributee112.*/"/>
+                    </exclude>
+                    <exclude pattern="/object12.*/">
+                        <attribute pattern="/attributee121.*/"/>
+                        <attribute pattern="/attributee122.*/"/>
+                    </exclude>
+                </rule>
+                <rule name="rule2" updateEvery="2s">
+                    <include pattern="/objecti21.*/">
+                        <attribute pattern="/attributei211.*/"/>
+                        <attribute pattern="/attributei212.*/"/>
+                    </include>
+                    <include pattern="/object22.*/">
+                        <attribute pattern="/attributei221.*/"/>
+                        <attribute pattern="/attributei222.*/"/>
+                    </include>
+                    <exclude pattern="/objecte21.*/">
+                        <attribute pattern="/attributee211.*/"/>
+                        <attribute pattern="/attributee212.*/"/>
+                    </exclude>
+                    <exclude pattern="/object22.*/">
+                        <attribute pattern="/attributee221.*/"/>
+                        <attribute pattern="/attributee222.*/"/>
+                    </exclude>
+                </rule>
+            </configuration>
+        ]]></value></property>
+    </bean>
+
+</beans>

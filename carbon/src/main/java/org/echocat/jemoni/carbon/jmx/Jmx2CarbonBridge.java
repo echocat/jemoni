@@ -15,8 +15,8 @@
 package org.echocat.jemoni.carbon.jmx;
 
 import org.echocat.jemoni.carbon.CarbonWriter;
-import org.echocat.jemoni.carbon.jmx.rules.Rule;
-import org.echocat.jemoni.carbon.jmx.rules.Rules;
+import org.echocat.jemoni.carbon.jmx.configuration.Rule;
+import org.echocat.jemoni.carbon.jmx.configuration.Configuration;
 import org.echocat.jemoni.jmx.JmxRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
     private final Set<Thread> _updatingThreads = new HashSet<>();
 
     private ClassLoader _classLoader = currentThread().getContextClassLoader();
-    private Rules _rules;
+    private Configuration _configuration;
     private String _pathPrefix = getLocalhost() + ".";
 
     @Nonnull
@@ -104,12 +104,12 @@ public class Jmx2CarbonBridge implements AutoCloseable {
         _classLoader = classLoader;
     }
 
-    public Rules getRules() {
-        return _rules;
+    public Configuration getConfiguration() {
+        return _configuration;
     }
 
-    public void setRules(Rules rules) {
-        _rules = rules;
+    public void setConfiguration(Configuration configuration) {
+        _configuration = configuration;
     }
 
     public String getPathPrefix() {
@@ -132,17 +132,17 @@ public class Jmx2CarbonBridge implements AutoCloseable {
     }
 
     public void updateMBeanIndex() throws Exception {
-        final Rules rules = _rules;
+        final Configuration configuration = _configuration;
         synchronized (this) {
             final Map<Rule, Set<AttributeDefinitions>> ruleToAttributeNames = new HashMap<>();
-            if (rules != null && rules.hasItems()) {
+            if (configuration != null && configuration.hasItems()) {
                 final Set<ObjectName> objectNames = _server.queryNames(null, null);
                 for (ObjectName objectName : objectNames) {
                     try {
                         final MBeanInfo mBeanInfo = _server.getMBeanInfo(objectName);
                         final MBeanAttributeInfo[] attributes = mBeanInfo.getAttributes();
 
-                        for (Rule rule : rules) {
+                        for (Rule rule : configuration) {
                             final Set<AttributeDefinition> singleAttributeDefinitions = new HashSet<>();
                             for (MBeanAttributeInfo attribute : attributes) {
                                 final AttributeDefinition attributeDefinition = findDefinitionFor(objectName, attribute);
@@ -162,7 +162,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
                     } catch (InstanceNotFoundException ignored) {}
                 }
             }
-            startThreads(ruleToAttributeNames);
+            startThreads(configuration, ruleToAttributeNames);
         }
     }
 
@@ -184,7 +184,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
             final String typeName = info.getType();
             if (typeName.startsWith("java.")) {
                 final Class<?> type = tryLoadClassBy(typeName);
-                if (type != null && Number.class.isAssignableFrom(type)) {
+                if (type != null && (Number.class.isAssignableFrom(type) || Boolean.class.equals(type) || Character.class.equals(type))) {
                     result = new AttributeDefinition(objectName, name, type);
                 } else {
                     result = null;
@@ -241,12 +241,12 @@ public class Jmx2CarbonBridge implements AutoCloseable {
         return result;
     }
 
-    protected void startThreads(@Nonnull Map<Rule, Set<AttributeDefinitions>> ruleToAttributeNames) {
+    protected void startThreads(@Nonnull Configuration configuration, @Nonnull Map<Rule, Set<AttributeDefinitions>> ruleToAttributeNames) {
         synchronized (this) {
             stopThreads();
             for (Entry<Rule, Set<AttributeDefinitions>> ruleAndAttributeNames : ruleToAttributeNames.entrySet()) {
                 final Rule rule = ruleAndAttributeNames.getKey();
-                final Worker worker = new Worker(rule, ruleAndAttributeNames.getValue());
+                final Worker worker = new Worker(configuration, rule, ruleAndAttributeNames.getValue());
                 final Thread thread = new Thread(worker, worker.toString());
                 thread.start();
                 _updatingThreads.add(thread);
@@ -294,10 +294,13 @@ public class Jmx2CarbonBridge implements AutoCloseable {
 
     protected class Worker implements Runnable {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        private final Configuration _configuration;
         private final Rule _rule;
         private final Set<AttributeDefinitions> _attributeNames;
 
-        public Worker(@Nonnull Rule rule, @Nonnull Set<AttributeDefinitions> attributeNames) {
+        public Worker(@Nonnull Configuration configuration, @Nonnull Rule rule, @Nonnull Set<AttributeDefinitions> attributeNames) {
+            _configuration = configuration;
             _rule = rule;
             _attributeNames = attributeNames;
         }
@@ -318,7 +321,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
                                         final String key = keyAndValue.getKey();
                                         final Object value = keyAndValue.getValue();
                                         if (value instanceof Number) {
-                                            _carbonWriter.write(getPathFor(objectName, key), (Number) value);
+                                            _carbonWriter.write(getPathFor(objectName, key, definition), (Number) value);
                                         }
                                     }
                                 } catch (InstanceNotFoundException ignored) {
@@ -340,14 +343,14 @@ public class Jmx2CarbonBridge implements AutoCloseable {
         }
 
         @Nonnull
-        protected String getPathFor(@Nonnull ObjectName objectName, @Nonnull String key) {
+        protected String getPathFor(@Nonnull ObjectName objectName, @Nonnull String key, @Nonnull AttributeDefinition definition) {
             final StringBuilder sb = new StringBuilder();
             final String pathPrefix = _pathPrefix;
             if (pathPrefix != null) {
                 sb.append(pathPrefix);
             }
             sb.append(getNormalizedNameFor(objectName)).append('.').append(key);
-            return sb.toString();
+            return _configuration.format(definition, sb.toString());
         }
 
         @Nonnull

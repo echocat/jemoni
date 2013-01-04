@@ -1,4 +1,4 @@
-https\://jemoni.echocat.org/schemas/carbon4spring-1.0.xsd=org/echocat/jemoni/carbon/spring/carbon4spring-1.0.xsd
-https\://jemoni.echocat.org/schemas/carbon4spring.xsd=org/echocat/jemoni/carbon/spring/carbon4spring-1.0.xsd
-https\://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd=org/echocat/jemoni/carbon/jmx/rules/jmx2carbonRules-1.0.xsd
-https\://jemoni.echocat.org/schemas/jmx2carbonRules.xsd=org/echocat/jemoni/carbon/jmx/rules/jmx2carbonRules-1.0.xsd
+https\://jemoni.echocat.org/schemas/carbon-1.0.xsd=org/echocat/jemoni/carbon/spring/carbon-1.0.xsd
+https\://jemoni.echocat.org/schemas/carbon.xsd=org/echocat/jemoni/carbon/spring/carbon-1.0.xsd
+https\://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd=org/echocat/jemoni/carbon/jmx/configuration/jmx2carbonRules-1.0.xsd
+https\://jemoni.echocat.org/schemas/jmx2carbonRules.xsd=org/echocat/jemoni/carbon/jmx/configuration/jmx2carbonRules-1.0.xsd

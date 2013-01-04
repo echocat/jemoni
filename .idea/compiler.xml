@@ -32,42 +32,10 @@
       <entry name="?*.ftl" />
       <entry name="?*.xsd" />
     </wildcardResourcePatterns>
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
-      </profile>
-      <profile default="false" name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-        <module name="carbon" />
-        <module name="jmx" />
-        <module name="org.echocat.jemoni.carbon" />
-        <module name="org.echocat.jemoni.jmx" />
-        <module name="org.echocat.redprecursor.advancedruntime" />
-        <module name="org.echocat.redprecursor.common" />
-        <module name="org.echocat.redprecursor.compilerplugin" />
-        <module name="org.echocat.redprecursor.runtime" />
-        <module name="org.echocat.redprecursor.sun" />
-      </profile>
-    </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="carbon" target="1.7" />
-      <module name="jemoni" target="1.7" />
-      <module name="jmx" target="1.7" />
-      <module name="org.echocat.jemoni" target="1.7" />
-      <module name="org.echocat.jemoni.carbon" target="1.7" />
-      <module name="org.echocat.jemoni.jmx" target="1.7" />
-      <module name="org.echocat.redprecursor" target="1.6" />
-      <module name="org.echocat.redprecursor.advancedruntime" target="1.6" />
-      <module name="org.echocat.redprecursor.common" target="1.6" />
-      <module name="org.echocat.redprecursor.compilerplugin" target="1.6" />
-      <module name="org.echocat.redprecursor.runtime" target="1.6" />
-      <module name="org.echocat.redprecursor.sun" target="1.6" />
-    </bytecodeTargetLevel>
+    <annotationProcessing enabled="false" useClasspath="true" />
   </component>
   <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.7" />
     <option name="MAXIMUM_HEAP_SIZE" value="256" />
   </component>
 </project>

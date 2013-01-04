@@ -15,18 +15,18 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:j2c="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+       xmlns:carbon="https://jemoni.echocat.org/schemas/carbon.xsd"
        xmlns:j2cr="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                           https://jemoni.echocat.org/schemas/carbon4spring.xsd https://jemoni.echocat.org/schemas/carbon4spring-1.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon.xsd https://jemoni.echocat.org/schemas/carbon-1.0.xsd
                            https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd https://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd">
 
     <bean id="classLoader" class="org.echocat.jemoni.carbon.spring.TestClassLoader" />
 
-    <j2c:carbonWriter id="carbonWriter" address="localhost:666" />
+    <carbon:writer id="carbonWriter" address="localhost:666" />
 
-    <j2c:jmx2carbonBridge id="bridge1" writer-ref="carbonWriter" pathPrefix="foo." classLoader-ref="classLoader">
-        <j2cr:rules>
+    <carbon:jmx2carbonBridge id="bridge1" writer-ref="carbonWriter" pathPrefix="foo." classLoader-ref="classLoader">
+        <j2cr:configuration>
             <j2cr:rule name="rule1" updateEvery="1s">
                 <j2cr:include pattern="/objecti11.*/">
                     <j2cr:attribute pattern="/attributei111.*/"/>
@@ -63,9 +63,12 @@
                     <j2cr:attribute pattern="/attributee222.*/"/>
                 </j2cr:exclude>
             </j2cr:rule>
-        </j2cr:rules>
-    </j2c:jmx2carbonBridge>
+        </j2cr:configuration>
+    </carbon:jmx2carbonBridge>
 
-    <j2c:jmx2carbonBridge writer-ref="carbonWriter" />
+    <carbon:jmx2carbonBridge writer-ref="carbonWriter" />
+
+    <bean id="rules3" class="org.echocat.jemoni.carbon.jmx.configuration.Configuration" />
+    <carbon:jmx2carbonBridge id="bridge3" writer-ref="carbonWriter" configuration-ref="rules3" />
 
 </beans>

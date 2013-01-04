@@ -5,14 +5,13 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-    <xsd:element name="rules" type="rules" />
+    <xsd:element name="configuration" type="configuration" />
 
-    <xsd:element name="rule" type="rule" />
-
-    <xsd:complexType name="rules">
-        <xsd:sequence>
-            <xsd:element name="rule" type="rule" minOccurs="0" maxOccurs="unbounded" />
-        </xsd:sequence>
+    <xsd:complexType name="configuration">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="rule" type="rule" />
+            <xsd:element name="format" type="format" />
+        </xsd:choice>
     </xsd:complexType>
 
     <xsd:complexType name="rule">
@@ -22,6 +21,15 @@
         </xsd:choice>
         <xsd:attribute name="name" type="nameType" use="optional" />
         <xsd:attribute name="updateEvery" type="durationType" use="optional" default="10s" />
+    </xsd:complexType>
+
+    <xsd:complexType name="format">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="include" type="object" />
+            <xsd:element name="exclude" type="object" />
+        </xsd:choice>
+        <xsd:attribute name="pattern" type="xsd:string" use="required" />
+        <xsd:attribute name="replacement" type="xsd:string" use="required" />
     </xsd:complexType>
 
     <xsd:complexType name="object">

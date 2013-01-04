@@ -12,15 +12,18 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import org.echocat.jomon.runtime.jaxb.PatternAdapter;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.regex.Pattern;
 
-public abstract class PatternRule {
+import static java.util.regex.Pattern.compile;
+
+public abstract class PatternRule<T extends PatternRule<T>> {
 
     private Pattern _pattern;
 
@@ -34,6 +37,23 @@ public abstract class PatternRule {
         _pattern = pattern;
     }
 
+    @Nonnull
+    public T pattern(@Nonnull Pattern pattern) {
+        setPattern(pattern);
+        return thisInstance();
+    }
+
+    @Nonnull
+    public T pattern(@Nonnull String pattern) {
+        return pattern(compile(pattern));
+    }
+
+    @Nonnull
+    protected T thisInstance() {
+        //noinspection unchecked
+        return (T) this;
+    }
+
     @Override
     public boolean equals(Object o) {
         final boolean result;
@@ -42,7 +62,7 @@ public abstract class PatternRule {
         } else if (o == null || !getClass().equals(o.getClass())) {
             result = false;
         } else {
-            final PatternRule that = (PatternRule) o;
+            final PatternRule<?> that = (PatternRule) o;
             if (_pattern != null) {
                 result = _pattern.pattern().equals(that._pattern.pattern()) && _pattern.flags() == that._pattern.flags();
             } else {

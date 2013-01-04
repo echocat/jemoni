@@ -12,20 +12,19 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import org.w3c.dom.Node;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.*;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 
 import static javax.xml.bind.JAXBContext.newInstance;
 import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA;
 
 public class RulesMarshaller {
 
@@ -34,7 +33,7 @@ public class RulesMarshaller {
 
     static {
         try {
-            JAXB_CONTEXT = newInstance(Rules.class, Rule.class, ObjectPatternRule.class, AttributePatternRule.class);
+            JAXB_CONTEXT = newInstance(Configuration.class, Rule.class, Format.class, ObjectRule.class, AttributeRule.class);
         } catch (Exception e) {
             throw new RuntimeException("Could not create jaxb context.", e);
         }
@@ -47,21 +46,28 @@ public class RulesMarshaller {
         NAMESPACE_PREFIX_MAPPER = namespacePrefixMapper;
     }
 
-    @Nonnull
-    public static Rules unmarshall(@Nonnull Reader reader) throws IOException {
-        final Unmarshaller unmarshaller = createUnmarshallerFor(reader);
+    @Nullable
+    public static Configuration unmarshall(@Nullable String content) {
         try {
-            return (Rules) unmarshaller.unmarshal(reader);
+            return isEmpty(content) ? null :  (Configuration) unmarshallerFor(content).unmarshal(new StringReader(content));
+        } catch (JAXBException e) {
+            throw new RuntimeException("Could not unmarshall: " + content, e);
+        }
+    }
+
+    @Nonnull
+    public static Configuration unmarshall(@Nonnull Reader reader) throws IOException {
+        try {
+            return (Configuration) unmarshallerFor(reader).unmarshal(reader);
         } catch (JAXBException e) {
             throw new IOException("Could not unmarshall " + reader + ".", e);
         }
     }
 
     @Nonnull
-    public static Rules unmarshall(@Nonnull Node rulesElement) {
-        final Unmarshaller unmarshaller = createUnmarshallerFor(rulesElement);
+    public static Configuration unmarshall(@Nonnull Node rulesElement) {
         try {
-            final JAXBElement<Rules> jaxbElement = rulesElement != null ? unmarshaller.unmarshal(rulesElement, Rules.class) : null;
+            final JAXBElement<Configuration> jaxbElement = rulesElement != null ? unmarshallerFor(rulesElement).unmarshal(rulesElement, Configuration.class) : null;
             return jaxbElement != null ? jaxbElement.getValue() : null;
         } catch (JAXBException e) {
             throw new RuntimeException("Could not unmarshall " + rulesElement + ".", e);
@@ -69,7 +75,7 @@ public class RulesMarshaller {
     }
 
     @Nonnull
-    protected static Unmarshaller createUnmarshallerFor(@Nullable Object element) {
+    protected static Unmarshaller unmarshallerFor(@Nullable Object element) {
         final Unmarshaller unmarshaller;
         try {
             unmarshaller = JAXB_CONTEXT.createUnmarshaller();
@@ -80,7 +86,33 @@ public class RulesMarshaller {
         return unmarshaller;
     }
 
-    public static void marshall(@Nonnull Rules rules, @Nonnull Writer to) throws IOException {
+    public static void marshall(@Nonnull Configuration configuration, @Nonnull Writer to) throws IOException {
+        try {
+            marshallerFor(configuration).marshal(configuration, to);
+        } catch (JAXBException e) {
+            throw new IOException("Could not marshall " + configuration + " to " + to + ".", e);
+        }
+    }
+
+    @Nullable
+    public static String marshall(@Nullable Configuration configuration) {
+        final String result;
+        if (configuration != null) {
+            final StringWriter to = new StringWriter();
+            try {
+                marshallerFor(configuration).marshal(configuration, to);
+            } catch (JAXBException e) {
+                throw new RuntimeException("Could not marshall " + configuration + ".", e);
+            }
+            result = to.toString();
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    @Nonnull
+    private static Marshaller marshallerFor(@Nonnull Configuration configuration) {
         final Marshaller marshaller;
         try {
             marshaller = JAXB_CONTEXT.createMarshaller();
@@ -90,13 +122,9 @@ public class RulesMarshaller {
                 marshaller.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", NAMESPACE_PREFIX_MAPPER);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not create marshaller to marshall " + rules + ".", e);
+            throw new RuntimeException("Could not create marshaller to marshall " + configuration + ".", e);
         }
-        try {
-            marshaller.marshal(rules, to);
-        } catch (Exception e) {
-            throw new IOException("Could not marshall " + rules + " to " + to + ".", e);
-        }
+        return marshaller;
     }
 
     private RulesMarshaller() {}

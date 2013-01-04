@@ -14,18 +14,17 @@
 
 package org.echocat.jemoni.carbon.spring;
 
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+import org.echocat.jemoni.carbon.jmx.configuration.Configuration;
+import org.springframework.beans.PropertyEditorRegistrar;
+import org.springframework.beans.PropertyEditorRegistry;
 
-/**
- * Handles schema <code>https://jemoni.echocat.org/schemas/carbon.xsd</code>
- */
-public class CarbonNamespaceHandler extends NamespaceHandlerSupport {
+import javax.annotation.Nonnull;
+
+public class CarbonPropertyEditorRegistrar implements PropertyEditorRegistrar {
 
     @Override
-    public void init() {
-        registerBeanDefinitionParser("registerPropertyEditors", new RegisterPropertyEditorsDefinitionParser());
-        registerBeanDefinitionParser("writer", new WriterDefinitionParser());
-        registerBeanDefinitionParser("jmx2carbonBridge", new Jmx2CarbonBridgeDefinitionParser());
+    public void registerCustomEditors(@Nonnull PropertyEditorRegistry registry) {
+        registry.registerCustomEditor(Configuration.class, new RulesPropertyEditor());
     }
 
 }

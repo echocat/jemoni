@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static java.lang.Thread.currentThread;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesMarshallerUnitTest.createReferenceRules;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesMarshallerUnitTest.createReferenceRules;
 import static org.echocat.jomon.testing.Assert.assertThat;
 import static org.echocat.jomon.testing.BaseMatchers.is;
 import static org.echocat.jomon.testing.BaseMatchers.isSameAs;
@@ -34,7 +34,7 @@ public class Jmx2CarbonBridgeDefinitionParserUnitTest {
 
     @Test
     public void test() throws Exception {
-        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jmx2carbonBridgeTestBeans.xml", CarbonWriterDefinitionParserUnitTest.class);
+        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jmx2carbonBridgeTestBeans.xml", Jmx2CarbonBridgeDefinitionParserUnitTest.class);
         try {
             final CarbonWriter carbonWriter = context.getBean("carbonWriter", CarbonWriter.class);
             final ClassLoader classLoader = context.getBean("classLoader", ClassLoader.class);
@@ -43,12 +43,12 @@ public class Jmx2CarbonBridgeDefinitionParserUnitTest {
             assertThat(bridge1.getCarbonWriter(), isSameAs(carbonWriter));
             assertThat(bridge1.getClassLoader(), isSameAs(classLoader));
             assertThat(bridge1.getPathPrefix(), is("foo."));
-            assertThat(bridge1.getRules(), is(createReferenceRules()));
+            assertThat(bridge1.getConfiguration(), is(createReferenceRules()));
 
             final Jmx2CarbonBridge bridge2 = context.getBean(Jmx2CarbonBridge.class.getName(), Jmx2CarbonBridge.class);
             assertThat(bridge2.getCarbonWriter(), isSameAs(carbonWriter));
             assertThat(bridge2.getClassLoader(), isSameAs(currentThread().getContextClassLoader()));
-            assertThat(bridge2.getRules(), is(null));
+            assertThat(bridge2.getConfiguration(), is(null));
         } finally {
             context.close();
         }

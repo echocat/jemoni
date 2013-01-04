@@ -1,1 +1,1 @@
-https\://jemoni.echocat.org/schemas/carbon4spring.xsd=org.echocat.jemoni.carbon.spring.CarbonNamespaceHandler
+https\://jemoni.echocat.org/schemas/carbon.xsd=org.echocat.jemoni.carbon.spring.CarbonNamespaceHandler

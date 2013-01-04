@@ -29,14 +29,14 @@ import static org.echocat.jemoni.carbon.CarbonWriter.DEFAULT_MAX_BUFFER_LIFETIME
 import static org.echocat.jomon.testing.Assert.assertThat;
 import static org.echocat.jomon.testing.BaseMatchers.is;
 
-public class CarbonWriterDefinitionParserUnitTest {
+public class WriterDefinitionParserUnitTest {
 
     @Rule
     public final LogEnvironment _logEnvironment = new LogEnvironment();
 
     @Test
     public void test() throws Exception {
-        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("carbonWriterTestBeans.xml", CarbonWriterDefinitionParserUnitTest.class);
+        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("writerTestBeans.xml", WriterDefinitionParserUnitTest.class);
         try {
             final CarbonWriter defaultWriter = context.getBean(CarbonWriter.class.getName(), CarbonWriter.class);
             assertThat(defaultWriter.getAddress(), is(new InetSocketAddress("localhost", 667)));

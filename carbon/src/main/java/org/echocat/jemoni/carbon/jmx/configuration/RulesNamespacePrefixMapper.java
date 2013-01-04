@@ -12,11 +12,11 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA_NAMESPACE;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA_NAMESPACE;
 
 public class RulesNamespacePrefixMapper extends NamespacePrefixMapper {
 
