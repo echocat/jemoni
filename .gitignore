@@ -10,5 +10,6 @@
 /.idea/customSpringBeans.xml
 
 /target
+/bundle/target
 /carbon/target
 /jmx/target

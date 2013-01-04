@@ -1,0 +1,55 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ **** BEGIN LICENSE BLOCK *****
+  ~
+  ~ Version: MPL 2.0
+  ~
+  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~
+  ~ **** END LICENSE BLOCK *****
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>distribution</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/../</directory>
+            <includes>
+                <include>LICENSE.txt</include>
+                <include>README.textile</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <scope>runtime</scope>
+            <outputDirectory>deps</outputDirectory>
+            <outputFileNameMapping>${artifact.groupId}.${artifact.artifactId}-${artifact.version}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+            <excludes>
+                <exclude>org.echocat.jemoni*:*:*:*</exclude>
+            </excludes>
+        </dependencySet>
+        <dependencySet>
+            <scope>runtime</scope>
+            <outputDirectory>/</outputDirectory>
+            <outputFileNameMapping>${artifact.groupId}.${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.echocat.jemoni*:*:*:*</include>
+            </includes>
+            <excludes>
+                <exclude>org.echocat.jemoni:bundle:*:*</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

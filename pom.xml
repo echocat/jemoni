@@ -27,6 +27,7 @@
     <modules>
         <module>jmx</module>
         <module>carbon</module>
+        <module>bundle</module>
     </modules>
 
     <licenses>
@@ -143,6 +144,12 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <!--suppress MavenModelInspection -->
+                    <version>2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.2</version>
                     <configuration>
@@ -190,6 +197,24 @@
                         <arguments>-DskipTests</arguments>
                         <scmCommentPrefix>* [RELEASE] </scmCommentPrefix>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <configuration>
+                                <descriptors>
+                                    <descriptor>src/main/assemble/distribution.xml</descriptor>
+                                </descriptors>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
