@@ -1,0 +1,168 @@
+h1. echocat JeMoni
+
+...is a toolset for monitoring JVMs. Generally it aims features around JMX.
+
+h1. JMX
+
+h2. Make a bean to a MBean
+
+You can simply use annotations to publish the information and operations of your beans.
+
+bc.. @Bean(description = "Very cool things here")
+public class Foo {
+    
+    private String _message;
+
+    @Attribute(description = "A nice message")
+    public String getMessage() {
+        return _message;
+    }
+
+    public void setMessage(String message) {
+        _message = message;
+    }
+
+    @Attribute(name= "numberOfDevil")
+    public int getNumber() {
+        return 666;
+    }
+
+    @Operation(description = "Say something")
+    public String say(@Argument(description = "magicNumber") int forInteger) {
+        return "What a cool number: " + forInteger;
+    }
+
+    public long getNumberThatIsHiddenInJmx() {
+        return 1234;
+    }
+}
+
+h2. Publish your bean
+
+bc.. final JmxRegistry registry = new JmxRegistry();
+final Registration registration = registry.register(new Foo());
+
+// Do something here ... you bean is now known in you local MBeanServer
+
+registration.close(); // Never forget to release it from the JMX context
+
+h1. Carbon
+
+...or _Graphite_ is a tool to visualize measure points. It could be used to visualize performance data of websites, memory usage, ... "Visit the Graphite website to get in touch with it.":http://graphite.wikidot.com/
+
+h2. Writer
+
+The first important tool is the @CarbonWriter@ to write measure points to a carbon server.
+
+h3. Initialize with Spring
+
+bc.. <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:carbon="https://jemoni.echocat.org/schemas/carbon.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon.xsd https://jemoni.echocat.org/schemas/carbon-1.0.xsd">
+
+    <carbon:writer address="my.carbon.server:666" />
+
+</beans>
+
+h3. Initialize direct
+
+bc.. final CarbonWriter writer = new CarbonWriter();
+writer.setAddress(new InetSocketAddress("my.carbon.server", 666));
+writer.init();
+// your application is running
+writer.close(); // Do not forget to close it on JVM shutdown
+
+h3. Use it
+
+bc.. writer.write("my.path", 12.3);
+
+h2. Jmx2CarbonBridge
+
+If you want to push data of MBeans to a carbon you simply have to configure the Jmx2CarbonBridge. It automatically detects all MBeans that machtes the given rules and export it in a defined interval to the carbon server.
+
+h3. Initialize with Spring
+
+bc.. <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:carbon="https://jemoni.echocat.org/schemas/carbon.xsd"
+       xmlns:j2cr="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           https://jemoni.echocat.org/schemas/carbon.xsd https://jemoni.echocat.org/schemas/carbon-1.0.xsd
+                           https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd https://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd">
+
+    <carbon:writer address="my.carbon.server:666" />
+    <carbon:jmx2carbonBridge writer-ref="org.echocat.jemoni.carbon.CarbonWriter">
+        <j2cr:configuration>
+            <j2cr:rule updateEvery="1s">
+                <j2cr:include pattern="/.*org\.echocat\.jemoni\.demo1.*/" />
+                <j2cr:exclude>
+                    <j2cr:attribute pattern="/.*ignored/"/>
+                </j2cr:exclude>
+            </j2cr:rule>
+            <j2cr:rule updateEvery="10s">
+                <j2cr:include pattern="/.*org\.echocat\.jemoni\.demo2.*/" />
+            </j2cr:rule>
+        </j2cr:configuration>
+    </carbon:jmx2carbonBridge>
+</beans>
+
+h3. Initialize direct
+
+bc.. final Jmx2CarbonBridge bridge = new Jmx2CarbonBridge(writer);
+bridge.setConfiguration(configuration().rules(
+    rule().updateEvery("1s").includes(
+        object().pattern("/.*org\\.echocat\\.jemoni\\.demo1.*/")
+    ).excludes(
+        object().attributes(
+            attribute("/.*ignored/")
+        )
+    ), rule().updateEvery("10s").includes(
+        object().pattern("/.*org\\.echocat\\.jemoni\\.demo2.*/")
+    )
+));
+bridge.init();
+// your application is running
+bridge.close(); // Do not forget to close it on JVM shutdown
+
+h3. Use it
+
+You have nothing to do. Until the bridge is running it will write all the time to the carbon server. If it is not reachable some measure points will be lost. The carbon writer only buffers a limited amount of measure points.
+
+h1. Links
+
+* "Maven Repository":http://repo.echocat.org/echocat
+* "Download latest bundle":https://repo.echocat.org/jemoni-releases/org/echocat/jemoni/bundle/[RELEASE]/bundle-[RELEASE]-distribution.zip (If you don't want to use maven)
+* "Issues":https://github.com/echocat/jemoni/issues
+
+h1. Use with Maven
+
+bc. <repositories>
+    <repository>
+        <id>echocat</id>
+        <url>http://repo.echocat.org/echocat</url>
+    </repository>
+</repositories>
+<dependencies>
+    <dependency>
+        <groupId>org.echocat.jemoni</groupId>
+        <artifactId>jmx</artifactId>
+        <version>-- version --</version>
+    </dependency>
+    <dependency>
+        <groupId>org.echocat.jemoni</groupId>
+        <artifactId>carbon</artifactId>
+        <version>-- version --</version>
+    </dependency>
+</dependencies>
+
+"Find out what are the possible versions or what is the latest version.":http://repo.echocat.org/echocat/org/echocat/jemoni/
+
+h1. License
+
+echocat Velma is licensed under "MPL 2.0":http://mozilla.org/MPL/2.0/.
+
+h1. Want to help?
+
+You are welcome. Fork or "contact us":mailto:contact@echocat.org.
