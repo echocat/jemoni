@@ -46,6 +46,74 @@ final Registration registration = registry.register(new Foo());
 
 registration.close(); // Never forget to release it from the JMX context
 
+h2. JvmHealth
+
+The @org.echocat.jemoni.jmx.support.JvmHealth@ bean is a container with the most important values of the JVM. Normally this values are widespread in the whole JMX context. Here you can find all values at one place.
+
+bc.. final JvmHealth jvmHealth = new JvmHealth(jmxRegistry);
+// Run your application...
+jvmHealth.close(); // Close it at shutdown of your application
+
+h2. ServletHealth
+
+The @org.echocat.jemoni.jmx.support.ServletHealth@ is a @ServletFilter@ which could be used to determinate the performance of running requests. It will measure all incoming request and will create a statistic of _requests per second_ and _average request duration_.
+
+The values could be separated in scopes that could configured in the web.xml.
+
+h3. Default usage in web.xml
+
+bc. <filter>
+    <filter-name>serlvetHealth</filter-name>
+    <filter-class>org.echocat.jemoni.jmx.support.ServletHealth</filter-class>
+    <init-param>
+        <param-name>mapping</param-name>
+        <param-value>
+            /foo.*>foo
+            /bar.*>bar
+            .*\.html>html
+            .*\.action>action
+        </param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>serlvetHealth</filter-name>
+    <url-pattern>*</url-pattern>
+</filter-mapping>
+
+The resulting MBean will be located under @org.echocat.jemoni.jmx.support:name=ServletHealth@ and provides the attributes:
+* @foo.requestsPerSecond@
+* @foo.averageRequestDuration@
+* @bar.requestsPerSecond@
+* @bar.averageRequestDuration@
+* @html.requestsPerSecond@
+* @html.averageRequestDuration@
+* @action.requestsPerSecond@
+* @action.averageRequestDuration@
+* @requestsPerSecond@ - includes also the values of all other @*.requestsPerSecond@
+* @averageRequestDuration@ - includes also the values of all other @*.averageRequestDuration@
+
+h3. Use an interceptor
+
+It is possible to use an interceptor to ignore requests or modify the target scope name. You have to implement @org.echocat.jemoni.jmx.support.ServletHealth.Interceptor@ and define it in the web.xml.
+
+bc. <init-param>
+    <param-name>interceptor</param-name>
+    <param-value>my.InterceptorImpl</param-value>
+</init-param>
+
+h3. Use it with spring
+
+You have to ways. You could initialize this filter directly with spring and inject the dependencies directly. Our define it in the filter config and the filter will resolve the values over the @WebApplicationContext@.
+
+bc. <init-param>
+    <param-name>interceptor-ref</param-name>
+    <param-value>myInterceptorBeanId</param-value>
+</init-param>
+<init-param>
+    <param-name>registry-ref</param-name>
+    <param-value>myJmxRegistryBeanId</param-value>
+</init-param>
+
 h1. Carbon
 
 ...or _Graphite_ is a tool to visualize measure points. It could be used to visualize performance data of websites, memory usage, ... 
