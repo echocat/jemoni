@@ -138,6 +138,7 @@ public class ServletHealthUnitTest {
         final JmxRegistry myRegistry = new JmxRegistry();
         assertThat(health.getRegistry(), isSameAs(getLocalInstance()));
         health.init(filterConfig(applicationContext("myRegistry", myRegistry), REGISTRY_REF_INIT_ATTRIBUTE, "myRegistry"));
+        health.close();
         assertThat(health.getRegistry(), isSameAs(myRegistry));
     }
 
@@ -159,8 +160,10 @@ public class ServletHealthUnitTest {
         final Interceptor myInterceptor = mock(Interceptor.class);
         assertThat(health.getInterceptor(), is(null));
         health.init(filterConfig(applicationContext("myInterceptor", myInterceptor), INTERCEPTOR_REF_INIT_ATTRIBUTE, "myInterceptor"));
+        health.close();
         assertThat(health.getInterceptor(), isSameAs(myInterceptor));
         health.init(filterConfig(null, INTERCEPTOR_INIT_ATTRIBUTE, MyInterceptor.class.getName()));
+        health.close();
         assertThat(health.getInterceptor(), isInstanceOf(MyInterceptor.class));
     }
 
@@ -168,10 +171,12 @@ public class ServletHealthUnitTest {
     public void testInitMappingByFilterConfig() throws Exception {
         final ServletHealth health1 = new ServletHealth();
         health1.init(filterConfig(null, MAPPING_INIT_ATTRIBUTE, null));
+        health1.close();
         assertThat(health1.getMapping(), is(null));
 
         final ServletHealth health2 = new ServletHealth();
         health2.init(filterConfig(null, MAPPING_INIT_ATTRIBUTE, "/f.o>foo"));
+        health2.close();
         assertThat(health2.getMapping(), isNotNull());
         assertThat(health2.getMappingFor("/foo").getDefaultName(), is("foo"));
     }
