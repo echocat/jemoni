@@ -50,9 +50,34 @@ h2. JvmHealth
 
 The @org.echocat.jemoni.jmx.support.JvmHealth@ bean is a container with the most important values of the JVM. Normally this values are widespread in the whole JMX context. Here you can find all values at one place.
 
-bc.. final JvmHealth jvmHealth = new JvmHealth(jmxRegistry);
+bc. final JvmHealth jvmHealth = new JvmHealth(jmxRegistry);
 // Run your application...
 jvmHealth.close(); // Close it at shutdown of your application
+
+The resulting MBean will be located under @org.echocat.jemoni.jmx.support:name=JvmHealth@ and provides the attributes:
+* @long gcCollectionCount@
+* @long gcCollectionTime@
+* @long heapCommitted@
+* @long heapInit@
+* @long heapMax@
+* @long heapUsed@
+* @long nonHeapCommitted@
+* @long nonHeapInit@
+* @long nonHeapMax@
+* @long nonHeapUsed@
+* @long loadedClassCount@
+* @long unloadedClassCount@
+* @long totalLoadedClassCount@
+* @long busyThreadCount@
+* @long totalThreadCount@
+* @long uptime@ _Yes there are possible usage scenarios ;-)_
+
+... and operations:
+* @void exit(int exitCode)@
+* @void gc()@
+* @java.util.Map<String, String> getSystemProperties()@
+* @String getSystemProperty(String name)@
+* @void setSystemProperty(String name, String value)@
 
 h2. ServletHealth
 
@@ -81,16 +106,16 @@ bc. <filter>
 </filter-mapping>
 
 The resulting MBean will be located under @org.echocat.jemoni.jmx.support:name=ServletHealth@ and provides the attributes:
-* @foo.requestsPerSecond@
-* @foo.averageRequestDuration@
-* @bar.requestsPerSecond@
-* @bar.averageRequestDuration@
-* @html.requestsPerSecond@
-* @html.averageRequestDuration@
-* @action.requestsPerSecond@
-* @action.averageRequestDuration@
-* @requestsPerSecond@ - includes also the values of all other @*.requestsPerSecond@
-* @averageRequestDuration@ - includes also the values of all other @*.averageRequestDuration@
+* @double foo.requestsPerSecond@
+* @double foo.averageRequestDuration@
+* @double bar.requestsPerSecond@
+* @double bar.averageRequestDuration@
+* @double html.requestsPerSecond@
+* @double html.averageRequestDuration@
+* @double action.requestsPerSecond@
+* @double action.averageRequestDuration@
+* @double requestsPerSecond@ - includes also the values of all other @*.requestsPerSecond@
+* @double averageRequestDuration@ - includes also the values of all other @*.averageRequestDuration@
 
 h3. Use an interceptor
 
