@@ -15,14 +15,14 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:j2c="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+       xmlns:carbon="https://jemoni.echocat.org/schemas/carbon.xsd"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                           https://jemoni.echocat.org/schemas/carbon4spring.xsd https://jemoni.echocat.org/schemas/carbon4spring-1.0.xsd">
+                           https://jemoni.echocat.org/schemas/carbon.xsd https://jemoni.echocat.org/schemas/carbon-1.0.xsd">
 
     <!-- We do not call the init and destroy methods in the test - we only want to know that the properties right set. -->
 
-    <j2c:carbonWriter address="localhost:667" />
+    <carbon:writer address="localhost:667" />
 
-    <j2c:carbonWriter id="xxx" address="localhost:666" charset="ISO-8859-15" maxBufferLifetime="666h" />
+    <carbon:writer id="xxx" address="localhost:666" charset="ISO-8859-15" maxBufferLifetime="666h" />
 
 </beans>

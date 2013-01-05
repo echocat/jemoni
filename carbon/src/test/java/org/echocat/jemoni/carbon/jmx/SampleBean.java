@@ -25,7 +25,6 @@ public class SampleBean {
         return "aString";
     }
 
-    @Attribute
     public int getExcludedOne() {
         return 666;
     }

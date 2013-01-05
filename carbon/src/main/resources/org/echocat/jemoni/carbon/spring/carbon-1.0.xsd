@@ -14,8 +14,8 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <xsd:schema version="1.0"
-            targetNamespace="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
-            xmlns="https://jemoni.echocat.org/schemas/carbon4spring.xsd"
+            targetNamespace="https://jemoni.echocat.org/schemas/carbon.xsd"
+            xmlns="https://jemoni.echocat.org/schemas/carbon.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:tool="http://www.springframework.org/schema/tool"
             xmlns:j2cr="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd"
@@ -24,7 +24,20 @@
     <xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.0.xsd" />
     <xsd:import namespace="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd" schemaLocation="https://jemoni.echocat.org/schemas/jmx2carbonRules-1.0.xsd" />
 
-    <xsd:element name="carbonWriter">
+    <xsd:element name="registerPropertyEditors">
+        <xsd:annotation>
+            <xsd:documentation>Register property editors to convert types of this modules.</xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="java.beans.PropertyEditorSupport" identifier="org.echocat.jemoni.carbon.propertyEditors" />
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="writer">
         <xsd:annotation>
             <xsd:documentation>Is used to write measure points to a carbon server.</xsd:documentation>
             <xsd:appinfo>
@@ -68,11 +81,21 @@
         </xsd:annotation>
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="j2cr:rules" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="j2cr:configuration" minOccurs="0" maxOccurs="1" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="optional" default="org.echocat.jemoni.carbon.jmx.Jmx2CarbonBridge">
                 <xsd:annotation>
                     <xsd:documentation>Id under which this writer will be present in the applicationContext.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="configuration-ref" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Used the configuration from this property instead of the element <code>configuration</code>.</xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation>
+                            <tool:expected-type type="org.echocat.jemoni.carbon.jmx.configuration.Configuration" />
+                        </tool:annotation>
+                    </xsd:appinfo>
                 </xsd:annotation>
             </xsd:attribute>
             <xsd:attribute name="writer-ref" type="xsd:string" use="required">

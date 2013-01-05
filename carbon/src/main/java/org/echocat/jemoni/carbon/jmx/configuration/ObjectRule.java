@@ -12,7 +12,7 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import org.echocat.jemoni.carbon.jmx.AttributeDefinition;
 
@@ -21,44 +21,28 @@ import javax.annotation.Nullable;
 import javax.management.ObjectName;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Collection;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
-import static java.util.regex.Pattern.compile;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA_NAMESPACE;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA_NAMESPACE;
 
 @XmlType(name = "object", namespace = SCHEMA_NAMESPACE)
-public class ObjectPatternRule extends PatternRule {
+public class ObjectRule extends PatternRule<ObjectRule> {
 
     @Nonnull
-    public static ObjectPatternRule object(@Nullable AttributePatternRule... attributes) {
-        return object((Pattern) null, attributes);
+    public static ObjectRule object() {
+        return new ObjectRule();
     }
 
-    @Nonnull
-    public static ObjectPatternRule object(@Nullable String pattern, @Nullable AttributePatternRule... attributes) {
-        return object(pattern != null ? compile(pattern) : null, attributes);
-    }
-
-    @Nonnull
-    public static ObjectPatternRule object(@Nullable Pattern pattern, @Nullable AttributePatternRule... attributes) {
-        final ObjectPatternRule result = new ObjectPatternRule();
-        result.setPattern(pattern);
-        if (attributes != null) {
-            result.setAttributeRules(asList(attributes));
-        }
-        return result;
-    }
-
-    private Collection<AttributePatternRule> _attributeRules;
+    private List<AttributeRule> _attributeRules;
 
     @XmlElement(name = "attribute", required = false, namespace = SCHEMA_NAMESPACE)
-    public Collection<AttributePatternRule> getAttributeRules() {
+    public List<AttributeRule> getAttributeRules() {
         return _attributeRules;
     }
 
-    public void setAttributeRules(Collection<AttributePatternRule> attributeRules) {
+    public void setAttributeRules(List<AttributeRule> attributeRules) {
         _attributeRules = attributeRules;
     }
 
@@ -96,11 +80,11 @@ public class ObjectPatternRule extends PatternRule {
     }
 
     @Nullable
-    protected Boolean apply(@Nonnull AttributeDefinition input, @Nullable Collection<AttributePatternRule> attributePatternRules) {
+    protected Boolean apply(@Nonnull AttributeDefinition input, @Nullable List<AttributeRule> attributeRules) {
         Boolean result = null;
-        if (attributePatternRules != null) {
-            for (AttributePatternRule attributePatternRule : attributePatternRules) {
-                final Boolean attributeMatch = attributePatternRule.apply(input);
+        if (attributeRules != null) {
+            for (AttributeRule attributeRule : attributeRules) {
+                final Boolean attributeMatch = attributeRule.apply(input);
                 if (attributeMatch != null) {
                     result = attributeMatch;
                     if (attributeMatch) {
@@ -112,11 +96,22 @@ public class ObjectPatternRule extends PatternRule {
         return result;
     }
 
+    @Nonnull
+    public ObjectRule attributes(@Nullable List<AttributeRule> attributes) {
+        setAttributeRules(attributes);
+        return this;
+    }
+
+    @Nonnull
+    public ObjectRule attributes(@Nullable AttributeRule... attributes) {
+        return attributes(attributes != null ? asList(attributes) : null);
+    }
+
     @Override
     public boolean equals(Object o) {
         final boolean result;
         if (super.equals(o) ) {
-            final ObjectPatternRule that = (ObjectPatternRule) o;
+            final ObjectRule that = (ObjectRule) o;
             result = (_attributeRules != null ? _attributeRules.equals(that._attributeRules) : that._attributeRules == null);
         } else {
             result = false;

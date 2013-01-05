@@ -20,10 +20,10 @@
     attributeFormDefault = UNQUALIFIED
 )
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import javax.xml.bind.annotation.XmlSchema;
 
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static javax.xml.bind.annotation.XmlNsForm.UNQUALIFIED;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA_NAMESPACE;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA_NAMESPACE;

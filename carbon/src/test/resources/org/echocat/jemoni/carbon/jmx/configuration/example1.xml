@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<rules xmlns="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd">
+<configuration xmlns="https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd">
     <rule name="rule1" updateEvery="1s">
         <include pattern="/objecti11.*/">
             <attribute pattern="/attributei111.*/"/>
@@ -36,4 +36,22 @@
             <attribute pattern="/attributee222.*/"/>
         </exclude>
     </rule>
-</rules>
+    <format pattern="/foo/" replacement="bar">
+        <include pattern="/objecti31.*/">
+            <attribute pattern="/attributei311.*/"/>
+            <attribute pattern="/attributei312.*/"/>
+        </include>
+        <include pattern="/object32.*/">
+            <attribute pattern="/attributei321.*/"/>
+            <attribute pattern="/attributei322.*/"/>
+        </include>
+        <exclude pattern="/objecte31.*/">
+            <attribute pattern="/attributee311.*/"/>
+            <attribute pattern="/attributee312.*/"/>
+        </exclude>
+        <exclude pattern="/object32.*/">
+            <attribute pattern="/attributee321.*/"/>
+            <attribute pattern="/attributee322.*/"/>
+        </exclude>
+    </format>
+</configuration>

@@ -32,7 +32,7 @@ import static org.echocat.jemoni.carbon.CarbonWriter.DEFAULT_CHARSET;
 import static org.echocat.jemoni.carbon.CarbonWriter.DEFAULT_MAX_BUFFER_LIFETIME;
 import static org.springframework.util.StringUtils.hasText;
 
-public class CarbonWriterDefinitionParser extends AbstractSingleBeanDefinitionParser {
+public class WriterDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
     public static final String ADDRESS_ATTRIBUTE = "address";
     public static final String MAX_BUFFER_LIFETIME_ATTRIBUTE = "maxBufferLifetime";

@@ -12,7 +12,7 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import org.echocat.jemoni.carbon.jmx.AttributeDefinition;
 
@@ -21,22 +21,19 @@ import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlType;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.compile;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA_NAMESPACE;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA_NAMESPACE;
 
 @XmlType(name = "attribute", namespace = SCHEMA_NAMESPACE)
-public class AttributePatternRule extends PatternRule {
+public class AttributeRule extends PatternRule<AttributeRule> {
 
     @Nonnull
-    public static AttributePatternRule attribute(@Nullable String pattern) {
-        return attribute(pattern != null ? compile(pattern) : null);
+    public static AttributeRule attribute(@Nonnull String pattern) {
+        return new AttributeRule().pattern(pattern);
     }
 
     @Nonnull
-    public static AttributePatternRule attribute(@Nullable Pattern pattern) {
-        final AttributePatternRule result = new AttributePatternRule();
-        result.setPattern(pattern);
-        return result;
+    public static AttributeRule attribute(@Nullable Pattern pattern) {
+        return new AttributeRule().pattern(pattern);
     }
 
     @Nullable

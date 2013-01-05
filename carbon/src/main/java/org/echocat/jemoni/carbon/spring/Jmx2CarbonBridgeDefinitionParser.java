@@ -15,7 +15,7 @@
 package org.echocat.jemoni.carbon.spring;
 
 import org.echocat.jemoni.carbon.jmx.Jmx2CarbonBridge;
-import org.echocat.jemoni.carbon.jmx.rules.Rules;
+import org.echocat.jemoni.carbon.jmx.configuration.Configuration;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -27,8 +27,8 @@ import org.w3c.dom.NodeList;
 
 import javax.annotation.Nonnull;
 
-import static org.echocat.jemoni.carbon.jmx.rules.RulesConstants.SCHEMA_NAMESPACE;
-import static org.echocat.jemoni.carbon.jmx.rules.RulesMarshaller.unmarshall;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesConstants.SCHEMA_NAMESPACE;
+import static org.echocat.jemoni.carbon.jmx.configuration.RulesMarshaller.unmarshall;
 import static org.springframework.util.StringUtils.hasText;
 
 public class Jmx2CarbonBridgeDefinitionParser extends AbstractSingleBeanDefinitionParser {
@@ -38,6 +38,8 @@ public class Jmx2CarbonBridgeDefinitionParser extends AbstractSingleBeanDefiniti
     public static final String WRITER_REF_ATTRIBUTE = "writer-ref";
     public static final String CLASS_LOADER_REF_ATTRIBUTE = "classLoader-ref";
     public static final String PATH_PREFIX_ATTRIBUTE = "pathPrefix";
+    public static final String CONFIGURATION_ELEMENT = "configuration";
+    public static final String CONFIGURATION_REF_ATTRIBUTE = CONFIGURATION_ELEMENT + "-ref";
 
     @Override
     protected Class<?> getBeanClass(Element element) {
@@ -68,15 +70,24 @@ public class Jmx2CarbonBridgeDefinitionParser extends AbstractSingleBeanDefiniti
             bean.addPropertyValue("pathPrefix", pathPrefix);
         }
 
-        Rules rules = null;
+        Configuration configuration = null;
         final NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             final Node child = children.item(i);
-            if ("rules".equals(child.getLocalName()) && SCHEMA_NAMESPACE.equals(child.getNamespaceURI())) {
-                rules = unmarshall(child);
+            if (CONFIGURATION_ELEMENT.equals(child.getLocalName()) && SCHEMA_NAMESPACE.equals(child.getNamespaceURI())) {
+                configuration = unmarshall(child);
             }
         }
-        bean.addPropertyValue("rules", rules);
+
+        final String rulesRef = element.getAttribute(CONFIGURATION_REF_ATTRIBUTE);
+        if (hasText(rulesRef)) {
+            if (configuration != null) {
+                throw new IllegalArgumentException("The " + CONFIGURATION_ELEMENT + " element and " + CONFIGURATION_REF_ATTRIBUTE + " attribute could not be used at the same time.");
+            }
+            bean.addPropertyReference("configuration", rulesRef);
+        } else {
+            bean.addPropertyValue("configuration", configuration);
+        }
     }
 
     @Override

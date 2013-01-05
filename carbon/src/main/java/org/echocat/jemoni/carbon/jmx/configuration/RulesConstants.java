@@ -12,7 +12,7 @@
  * *** END LICENSE BLOCK *****
  ****************************************************************************************/
 
-package org.echocat.jemoni.carbon.jmx.rules;
+package org.echocat.jemoni.carbon.jmx.configuration;
 
 import org.xml.sax.SAXException;
 
@@ -27,7 +27,7 @@ import static org.echocat.jomon.runtime.util.ResourceUtils.closeQuietly;
 public class RulesConstants {
 
     public static final String SCHEMA_NAMESPACE = "https://jemoni.echocat.org/schemas/jmx2carbonRules.xsd";
-    public static final String SCHEMA_XSD_LOCATION = "org/echocat/jemoni/carbon/jmx/rules/jmx2carbonRules-1.0.xsd";
+    public static final String SCHEMA_XSD_LOCATION = "org/echocat/jemoni/carbon/jmx/configuration/jmx2carbonRules-1.0.xsd";
     public static final Schema SCHEMA;
 
     static {
