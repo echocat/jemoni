@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import static java.lang.Thread.currentThread;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -46,7 +47,8 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
 
     public static final String MAPPING_INIT_ATTRIBUTE = "mapping";
     public static final String REGISTRY_REF_INIT_ATTRIBUTE = "registry-ref";
-    public static final String INTERCEPTOR_REF_INIT_ATTRIBUTE = "interceptor-ref";
+    public static final String INTERCEPTOR_INIT_ATTRIBUTE = "interceptor";
+    public static final String INTERCEPTOR_REF_INIT_ATTRIBUTE = INTERCEPTOR_INIT_ATTRIBUTE + "-ref";
 
     public static final String REQUESTS_PER_SECOND_ATTRIBUTE_NAME = "requestsPerSecond";
     public static final String AVERAGE_REQUEST_DURATION_ATTRIBUTE_NAME = "averageRequestDuration";
@@ -165,11 +167,33 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
         if (!isEmpty(registryRef)) {
             setRegistry(getBeanFor(filterConfig.getServletContext(), registryRef, JmxRegistry.class));
         }
+        final String interceptor = filterConfig.getInitParameter(INTERCEPTOR_INIT_ATTRIBUTE);
+        if (!isEmpty(interceptor)) {
+            setInterceptor(loadInterceptor(interceptor));
+        }
         final String interceptorRef = filterConfig.getInitParameter(INTERCEPTOR_REF_INIT_ATTRIBUTE);
         if (!isEmpty(interceptorRef)) {
             setInterceptor(getBeanFor(filterConfig.getServletContext(), interceptorRef, Interceptor.class));
         }
         init();
+    }
+
+    @Nonnull
+    public Interceptor loadInterceptor(@Nonnull String interceptorTypeName) throws ServletException {
+        final Class<?> interceptorType;
+        try {
+            interceptorType = currentThread().getContextClassLoader().loadClass(interceptorTypeName);
+        } catch (ClassNotFoundException e) {
+            throw new ServletException("Could not find interceptor of type " + interceptorTypeName + ".", e);
+        }
+        if (!Interceptor.class.isAssignableFrom(interceptorType)) {
+            throw new ServletException("Defined interceptor type " + interceptorTypeName + " does not implements " + Interceptor.class.getName() + ".");
+        }
+        try {
+            return (Interceptor) interceptorType.newInstance();
+        } catch (Exception e) {
+            throw new ServletException("Could not create an instance of interceptor " + interceptorType.getName() + ".", e);
+        }
     }
 
     @Override

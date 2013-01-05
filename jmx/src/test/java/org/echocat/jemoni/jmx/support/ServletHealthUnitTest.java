@@ -33,6 +33,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -159,6 +160,8 @@ public class ServletHealthUnitTest {
         assertThat(health.getInterceptor(), is(null));
         health.init(filterConfig(applicationContext("myInterceptor", myInterceptor), INTERCEPTOR_REF_INIT_ATTRIBUTE, "myInterceptor"));
         assertThat(health.getInterceptor(), isSameAs(myInterceptor));
+        health.init(filterConfig(null, INTERCEPTOR_INIT_ATTRIBUTE, MyInterceptor.class.getName()));
+        assertThat(health.getInterceptor(), isInstanceOf(MyInterceptor.class));
     }
 
     @Test
@@ -255,6 +258,26 @@ public class ServletHealthUnitTest {
                 }
             }
         };
+    }
+
+    public static class MyInterceptor implements Interceptor {
+
+        @Override
+        public boolean isRecordAllowed(@Nonnull ServletRequest request, @Nonnull ScopeMapping globalMapping, @Nullable ScopeMapping specificMapping) {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public String getSpecificTargetName(@Nonnull ServletRequest request, @Nonnull ScopeMapping specificMapping) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Collection<String> getPossibleNames(@Nonnull String defaultName) {
+            return null;
+        }
     }
 
 }
