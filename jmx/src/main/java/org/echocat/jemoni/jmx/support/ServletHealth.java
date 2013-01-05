@@ -3,7 +3,7 @@
  *
  * Version: MPL 2.0
  *
- * echocat JeMoni, Copyright (c) 2012 echocat
+ * echocat JeMoni, Copyright (c) 2012-2013 echocat
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,10 +17,14 @@ package org.echocat.jemoni.jmx.support;
 import org.apache.commons.collections15.map.LRUMap;
 import org.echocat.jemoni.jmx.JmxRegistry;
 import org.echocat.jemoni.jmx.Registration;
+import org.echocat.jemoni.jmx.support.ServletHealth.ScopeMapping;
 import org.echocat.jomon.runtime.concurrent.StopWatch;
+import org.echocat.jomon.runtime.iterators.ConvertingIterator;
 import org.echocat.jomon.runtime.math.OverPeriodAverageDoubleCounter;
 import org.echocat.jomon.runtime.math.OverPeriodCounter;
 import org.echocat.jomon.runtime.util.Duration;
+import org.echocat.jomon.runtime.util.Entry;
+import org.echocat.jomon.runtime.util.Entry.Impl;
 
 import javax.annotation.*;
 import javax.management.*;
@@ -28,22 +32,29 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableMap;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.echocat.jemoni.jmx.JmxRegistry.getLocalInstance;
+import static org.echocat.jemoni.jmx.support.SpringUtils.getBeanFor;
 import static org.echocat.jomon.runtime.util.ResourceUtils.closeQuietly;
 
-public class ServletHealth implements AutoCloseable, Filter {
+public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Pattern, ScopeMapping>> {
+
+    public static final String MAPPING_INIT_ATTRIBUTE = "mapping";
+    public static final String REGISTRY_REF_INIT_ATTRIBUTE = "registry-ref";
+    public static final String INTERCEPTOR_REF_INIT_ATTRIBUTE = "interceptor-ref";
 
     public static final String REQUESTS_PER_SECOND_ATTRIBUTE_NAME = "requestsPerSecond";
     public static final String AVERAGE_REQUEST_DURATION_ATTRIBUTE_NAME = "averageRequestDuration";
     public static final String CURRENT_REQUEST_STOP_WATCH_ATTRIBUTE_NAME = ServletHealth.class.getName() + ".currentRequestStopWatch";
 
     private final Map<String, ScopeMapping> _pathToMappingCache = new LRUMap<>(10000);
-    private final JmxRegistry _registry;
+
+    private JmxRegistry _registry;
 
     private Map<Pattern, ScopeMapping> _patternToMapping;
     private Map<String, ScopeMapping> _nameToMapping;
@@ -51,8 +62,7 @@ public class ServletHealth implements AutoCloseable, Filter {
 
     private Registration _registration;
 
-    public ServletHealth(@Nonnull JmxRegistry registry) {
-        _registry = registry;
+    public ServletHealth() {
         setMapping(null);
     }
 
@@ -97,7 +107,7 @@ public class ServletHealth implements AutoCloseable, Filter {
     public String getMapping() {
         final StringBuilder sb = new StringBuilder();
 
-        for (Entry<Pattern, ScopeMapping> patternAndMapping : _patternToMapping.entrySet()) {
+        for (Map.Entry<Pattern, ScopeMapping> patternAndMapping : _patternToMapping.entrySet()) {
             if (patternAndMapping.getKey() != null) {
                 if (sb.length() > 0) {
                     sb.append(",\n");
@@ -109,6 +119,8 @@ public class ServletHealth implements AutoCloseable, Filter {
         return sb.length() > 0 ? sb.toString() : null;
     }
 
+
+
     public Interceptor getInterceptor() {
         return _interceptor;
     }
@@ -118,9 +130,19 @@ public class ServletHealth implements AutoCloseable, Filter {
         setMapping(getMapping());
     }
 
+    public void setRegistry(@Nullable JmxRegistry registry) {
+        _registry = registry;
+    }
+
+    @Nonnull
+    public JmxRegistry getRegistry() {
+        final JmxRegistry registry = _registry;
+        return registry != null ? registry : getLocalInstance();
+    }
+
     @Nonnull
     protected Map<String, ScopeMapping> asNameToMapping(@Nonnull Iterable<ScopeMapping> values) {
-        final Map<String, ScopeMapping> result = new HashMap<>();
+        final Map<String, ScopeMapping> result = new LinkedHashMap<>();
         for (ScopeMapping mapping : values) {
             for (String name : mapping.getAllNames()) {
                 result.put(name, mapping);
@@ -129,19 +151,50 @@ public class ServletHealth implements AutoCloseable, Filter {
         return unmodifiableMap(result);
     }
 
-    @PostConstruct
-    public void init() throws Exception {
-        _registration = _registry.register(new MBeanInformation(), getClass());
+    public void init() {
+        _registration = getRegistry().register(new MBeanInformation(), getClass());
     }
 
     @Override
-    @PreDestroy
-    public void close() throws Exception {
+    public void init(@Nonnull FilterConfig filterConfig) throws ServletException {
+        final String mapping = filterConfig.getInitParameter(MAPPING_INIT_ATTRIBUTE);
+        if (mapping != null) {
+            setMapping(mapping);
+        }
+        final String registryRef = filterConfig.getInitParameter(REGISTRY_REF_INIT_ATTRIBUTE);
+        if (!isEmpty(registryRef)) {
+            setRegistry(getBeanFor(filterConfig.getServletContext(), registryRef, JmxRegistry.class));
+        }
+        final String interceptorRef = filterConfig.getInitParameter(INTERCEPTOR_REF_INIT_ATTRIBUTE);
+        if (!isEmpty(interceptorRef)) {
+            setInterceptor(getBeanFor(filterConfig.getServletContext(), interceptorRef, Interceptor.class));
+        }
+        init();
+    }
+
+    @Override
+    public void close() {
         try {
             closeQuietly(_registration);
         } finally {
             _registration = null;
         }
+    }
+
+    @Override
+    public void destroy() {
+        close();
+    }
+
+    @Override
+    @Nonnull
+    public Iterator<Entry<Pattern, ScopeMapping>> iterator() {
+        return new ConvertingIterator<Map.Entry<Pattern, ScopeMapping>, Entry<Pattern, ScopeMapping>>(_patternToMapping.entrySet().iterator()) {
+            @Override
+            protected Entry<Pattern, ScopeMapping> convert(Map.Entry<Pattern, ScopeMapping> input) {
+                return new Impl<>(input.getKey(), input.getValue());
+            }
+        };
     }
 
     @Override
@@ -179,7 +232,7 @@ public class ServletHealth implements AutoCloseable, Filter {
             mapping = _pathToMappingCache.get(path);
         }
         if (mapping == null) {
-            for (Entry<Pattern, ScopeMapping> patternAndScope : _patternToMapping.entrySet()) {
+            for (Map.Entry<Pattern, ScopeMapping> patternAndScope : _patternToMapping.entrySet()) {
                 final Pattern pattern = patternAndScope.getKey();
                 if (pattern != null && pattern.matcher(path).matches()) {
                     mapping = patternAndScope.getValue();
@@ -193,8 +246,10 @@ public class ServletHealth implements AutoCloseable, Filter {
         return mapping;
     }
 
-    @Override public void init(FilterConfig filterConfig) throws ServletException {}
-    @Override public void destroy() {}
+    @Nullable
+    protected ScopeMapping getMapping(@Nonnull String defaultName) {
+        return _nameToMapping.get(defaultName);
+    }
 
     public static class ScopeMapping {
 

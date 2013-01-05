@@ -3,7 +3,7 @@
  *
  * Version: MPL 2.0
  *
- * echocat JeMoni, Copyright (c) 2012 echocat
+ * echocat JeMoni, Copyright (c) 2012-2013 echocat
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,13 @@ import java.lang.management.ManagementFactory;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class JmxRegistry {
+
+    private static final JmxRegistry LOCAL_INSTANCE = new JmxRegistry();
+
+    @Nonnull
+    public static JmxRegistry getLocalInstance() {
+        return LOCAL_INSTANCE;
+    }
 
     private final RegistrationHandler _handler = new RegistrationHandler();
     private final MBeanServer _server;
@@ -49,6 +56,10 @@ public class JmxRegistry {
     }
 
     public void setBeanFacadeFactory(@Nonnull BeanFacadeFactory beanFacadeFactory) {
+        // noinspection ObjectEquality
+        if (this == LOCAL_INSTANCE) {
+            throw new IllegalStateException("Modification of the local instance of " + JmxRegistry.class.getName() + " is not supported.");
+        }
         _beanFacadeFactory = beanFacadeFactory;
     }
 
