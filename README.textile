@@ -1,6 +1,5 @@
+h1. echocat JeMoni 
 "!https://secure.travis-ci.org/echocat/jemoni.png!":https://travis-ci.org/echocat/jemoni
-
-h1. echocat JeMoni
 
 ...is a toolset for monitoring JVMs. Generally it aims features around JMX.
 
