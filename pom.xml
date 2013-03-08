@@ -21,7 +21,7 @@
     <groupId>org.echocat</groupId>
     <artifactId>jemoni</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.4</version>
     <url>https://jemoni.echocat.org</url>
 
     <modules>
@@ -285,7 +285,7 @@
         <connection>scm:git:git@github.com:echocat/jemoni.git</connection>
         <developerConnection>scm:git:git@github.com:echocat/jemoni.git</developerConnection>
         <url>https://github.com/echocat/jemoni</url>
-      <tag>HEAD</tag>
+      <tag>version-0.1.4</tag>
   </scm>
 
 </project>
