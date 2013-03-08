@@ -26,7 +26,9 @@ import org.echocat.jomon.runtime.util.Duration;
 import org.echocat.jomon.runtime.util.Entry;
 import org.echocat.jomon.runtime.util.Entry.Impl;
 
-import javax.annotation.*;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.management.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +49,10 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
 
     public static final String MAPPING_INIT_ATTRIBUTE = "mapping";
     public static final String REGISTRY_REF_INIT_ATTRIBUTE = "registry-ref";
+
+    public static final String EXCLUDES_HOSTS = "excludeHosts";
+    public static final String INCLUDES_HOSTS = "includeHosts";
+
     public static final String INTERCEPTOR_INIT_ATTRIBUTE = "interceptor";
     public static final String INTERCEPTOR_REF_INIT_ATTRIBUTE = INTERCEPTOR_INIT_ATTRIBUTE + "-ref";
 
@@ -60,7 +66,7 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
 
     private Map<Pattern, ScopeMapping> _patternToMapping;
     private Map<String, ScopeMapping> _nameToMapping;
-    private Interceptor _interceptor;
+    private ServletHealthInterceptor _interceptor;
 
     private Registration _registration;
 
@@ -70,7 +76,7 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
 
     public void setMapping(@Nullable String mappingAsString) {
         final Map<Pattern, ScopeMapping> patternToMapping = new LinkedHashMap<>();
-        final Interceptor interceptor = _interceptor;
+        final ServletHealthInterceptor interceptor = _interceptor;
 
         if (mappingAsString != null) {
             for (String parts : mappingAsString.split("[,\\n\\r]")) {
@@ -123,11 +129,11 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
 
 
 
-    public Interceptor getInterceptor() {
+    public ServletHealthInterceptor getInterceptor() {
         return _interceptor;
     }
 
-    public void setInterceptor(Interceptor interceptor) {
+    public void setInterceptor(ServletHealthInterceptor interceptor) {
         _interceptor = interceptor;
         setMapping(getMapping());
     }
@@ -173,24 +179,37 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
         }
         final String interceptorRef = filterConfig.getInitParameter(INTERCEPTOR_REF_INIT_ATTRIBUTE);
         if (!isEmpty(interceptorRef)) {
-            setInterceptor(getBeanFor(filterConfig.getServletContext(), interceptorRef, Interceptor.class));
+            setInterceptor(getBeanFor(filterConfig.getServletContext(), interceptorRef, ServletHealthInterceptor.class));
         }
+        handleHostIncludeExcludesIfNeeded(filterConfig);
         init();
     }
 
+    protected void handleHostIncludeExcludesIfNeeded(@Nonnull FilterConfig filterConfig) {
+        final String includeHosts = filterConfig.getInitParameter(INCLUDES_HOSTS);
+        final String excludeHosts = filterConfig.getInitParameter(EXCLUDES_HOSTS);
+        if (!isEmpty(includeHosts) || !isEmpty(excludeHosts)) {
+            final ServletHealthInterceptor originalInterceptor = getInterceptor();
+            final AllowedHostsServletHealthInterceptor newInterceptor = new AllowedHostsServletHealthInterceptor();
+            newInterceptor.setIncludesPattern(includeHosts);
+            newInterceptor.setExcludesPattern(excludeHosts);
+            setInterceptor(originalInterceptor != null ? new CombinedServletHealthInterceptor(originalInterceptor, newInterceptor) : newInterceptor);
+        }
+    }
+
     @Nonnull
-    public Interceptor loadInterceptor(@Nonnull String interceptorTypeName) throws ServletException {
+    public ServletHealthInterceptor loadInterceptor(@Nonnull String interceptorTypeName) throws ServletException {
         final Class<?> interceptorType;
         try {
             interceptorType = currentThread().getContextClassLoader().loadClass(interceptorTypeName);
         } catch (ClassNotFoundException e) {
             throw new ServletException("Could not find interceptor of type " + interceptorTypeName + ".", e);
         }
-        if (!Interceptor.class.isAssignableFrom(interceptorType)) {
-            throw new ServletException("Defined interceptor type " + interceptorTypeName + " does not implements " + Interceptor.class.getName() + ".");
+        if (!ServletHealthInterceptor.class.isAssignableFrom(interceptorType)) {
+            throw new ServletException("Defined interceptor type " + interceptorTypeName + " does not implements " + ServletHealthInterceptor.class.getName() + ".");
         }
         try {
-            return (Interceptor) interceptorType.newInstance();
+            return (ServletHealthInterceptor) interceptorType.newInstance();
         } catch (Exception e) {
             throw new ServletException("Could not create an instance of interceptor " + interceptorType.getName() + ".", e);
         }
@@ -232,7 +251,7 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
         } finally {
             request.removeAttribute(CURRENT_REQUEST_STOP_WATCH_ATTRIBUTE_NAME);
             final Duration duration = stopWatch.getCurrentDuration();
-            final Interceptor interceptor = _interceptor;
+            final ServletHealthInterceptor interceptor = _interceptor;
             if (interceptor == null || interceptor.isRecordAllowed(request, globalMapping, specificMapping)) {
                 globalMapping.record(null, duration);
                 if (specificMapping != null) {
@@ -410,18 +429,6 @@ public class ServletHealth implements AutoCloseable, Filter, Iterable<Entry<Patt
         @Override public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException { throw new AttributeNotFoundException(); }
         @Override public AttributeList getAttributes(String[] attributes) { throw new UnsupportedOperationException(); }
         @Override public AttributeList setAttributes(AttributeList attributes) { throw new UnsupportedOperationException(); }
-
-    }
-
-    public static interface Interceptor {
-
-        public boolean isRecordAllowed(@Nonnull ServletRequest request, @Nonnull ScopeMapping globalMapping, @Nullable ScopeMapping specificMapping);
-
-        @Nullable
-        public String getSpecificTargetName(@Nonnull ServletRequest request, @Nonnull ScopeMapping specificMapping);
-
-        @Nullable
-        public Collection<String> getPossibleNames(@Nonnull String defaultName);
 
     }
 

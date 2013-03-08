@@ -157,7 +157,7 @@ public class ServletHealthUnitTest {
             assertThat(expected.getMessage(), contains("Could not find bean"));
         }
         final ServletHealth health = new ServletHealth();
-        final Interceptor myInterceptor = mock(Interceptor.class);
+        final ServletHealthInterceptor myInterceptor = mock(ServletHealthInterceptor.class);
         assertThat(health.getInterceptor(), is(null));
         health.init(filterConfig(applicationContext("myInterceptor", myInterceptor), INTERCEPTOR_REF_INIT_ATTRIBUTE, "myInterceptor"));
         health.close();
@@ -265,7 +265,7 @@ public class ServletHealthUnitTest {
         };
     }
 
-    public static class MyInterceptor implements Interceptor {
+    public static class MyInterceptor implements ServletHealthInterceptor {
 
         @Override
         public boolean isRecordAllowed(@Nonnull ServletRequest request, @Nonnull ScopeMapping globalMapping, @Nullable ScopeMapping specificMapping) {
