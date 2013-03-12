@@ -149,6 +149,32 @@ public class JmxRegistry {
     }
 
     @Nonnull
+    public <T> T getMBeanProxy(@Nonnull String mbeanName, @Nonnull Class<T> mbeanInterface) {
+        try {
+            return getMBeanProxy(new ObjectName(mbeanName), mbeanInterface);
+        } catch (MalformedObjectNameException e) {
+            throw new IllegalArgumentException("Could not create object name for " + mbeanName + ".", e);
+        }
+    }
+
+    @Nonnull
+    public <T> T getMBeanProxy(@Nonnull ObjectName objectName, @Nonnull Class<T> mbeanInterface) {
+        try {
+            final boolean emitter = getServer().isInstanceOf(objectName, NotificationEmitter.class.getName());
+            // create an MXBean proxy
+            return JMX.newMXBeanProxy(getServer(), objectName, mbeanInterface, emitter);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not create mbean proxy for " + objectName + ".", e);
+        }
+    }
+
+    @Nonnull
+    public <T> T getMBeanProxy(@Nonnull Class<T> mbeanInterface, @Nonnull String instance) {
+        final ObjectName objectName = getObjectNameFor(mbeanInterface, instance, null);
+        return getMBeanProxy(objectName, mbeanInterface);
+    }
+
+    @Nonnull
     protected String normalize(@Nonnull String what) {
         final char[] in = what.toCharArray();
         final char[] out = new char[in.length];
