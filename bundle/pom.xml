@@ -20,7 +20,7 @@
     <parent>
         <artifactId>jemoni</artifactId>
         <groupId>org.echocat</groupId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.1.6</version>
     </parent>
 
     <name>echocat JeMoni Bundle</name>
