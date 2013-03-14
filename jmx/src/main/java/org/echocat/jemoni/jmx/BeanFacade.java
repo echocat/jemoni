@@ -19,6 +19,7 @@ import org.echocat.jemoni.jmx.AttributeDefinition.AccessMode;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.management.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,14 @@ public class BeanFacade<B> implements DynamicMBean {
         }
         try {
             return attributeDefinition.get(_bean);
+        } catch (InvocationTargetException e) {
+            final Throwable target = e.getTargetException();
+            if (target instanceof Exception) {
+                // noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
+                throw new ReflectionException((Exception) target, target.getMessage());
+            } else {
+                throw new ReflectionException(e);
+            }
         } catch (Exception e) {
             throw new ReflectionException(e);
         }
@@ -69,6 +78,14 @@ public class BeanFacade<B> implements DynamicMBean {
         try {
             // noinspection unchecked
             ((AttributeDefinition<Object, B>)attributeDefinition).set(_bean, value);
+        } catch (InvocationTargetException e) {
+            final Throwable target = e.getTargetException();
+            if (target instanceof Exception) {
+                // noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
+                throw new ReflectionException((Exception) target, target.getMessage());
+            } else {
+                throw new ReflectionException(e);
+            }
         } catch (Exception e) {
             throw new ReflectionException(e);
         }
@@ -92,6 +109,14 @@ public class BeanFacade<B> implements DynamicMBean {
         }
         try {
             return operationDefinition.invoke(_bean, params);
+        } catch (InvocationTargetException e) {
+            final Throwable target = e.getTargetException();
+            if (target instanceof Exception) {
+                // noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
+                throw new ReflectionException((Exception) target, target.getMessage());
+            } else {
+                throw new ReflectionException(e);
+            }
         } catch (Exception e) {
             throw new ReflectionException(e);
         }
