@@ -112,7 +112,7 @@ public class JvmHealth implements AutoCloseable {
     public long getGcCollectionCount() {
         long result = 0;
         for (GarbageCollectorMXBean bean : getGarbageCollectorMXBeans()) {
-            final long current = bean.getCollectionCount();
+            final long current = bean != null ? bean.getCollectionCount() : -1;
             if (current >= 0) {
                 result += current;
             }
@@ -125,7 +125,7 @@ public class JvmHealth implements AutoCloseable {
     public long getGcCollectionTime() {
         long result = 0;
         for (GarbageCollectorMXBean bean : getGarbageCollectorMXBeans()) {
-            final long current = bean.getCollectionTime();
+            final long current = bean != null ? bean.getCollectionTime() : -1;
             if (current >= 0) {
                 result += current;
             }
@@ -139,7 +139,7 @@ public class JvmHealth implements AutoCloseable {
         final ThreadMXBean threadMXBean = getThreadMXBean();
         int count = 0;
         for (ThreadInfo threadInfo : threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds())) {
-            if (threadInfo.getThreadState() == State.RUNNABLE) {
+            if (threadInfo != null && threadInfo.getThreadState() == State.RUNNABLE) {
                 count++;
             }
         }
