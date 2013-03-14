@@ -182,7 +182,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
             result = findDefinitionFor(objectName, info, name, (CompositeType) openType);
         } else {
             final String typeName = info.getType();
-            if (typeName.startsWith("java.")) {
+            if (typeName != null && typeName.startsWith("java.")) {
                 final Class<?> type = tryLoadClassBy(typeName);
                 if (type != null && (Number.class.isAssignableFrom(type) || Boolean.class.equals(type) || Character.class.equals(type))) {
                     result = new AttributeDefinition(objectName, name, type);
