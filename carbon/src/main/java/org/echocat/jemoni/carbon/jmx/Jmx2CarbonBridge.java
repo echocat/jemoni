@@ -15,8 +15,8 @@
 package org.echocat.jemoni.carbon.jmx;
 
 import org.echocat.jemoni.carbon.CarbonWriter;
-import org.echocat.jemoni.carbon.jmx.configuration.Rule;
 import org.echocat.jemoni.carbon.jmx.configuration.Configuration;
+import org.echocat.jemoni.carbon.jmx.configuration.Rule;
 import org.echocat.jemoni.jmx.JmxRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +38,12 @@ import java.util.regex.Pattern;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 import static javax.management.MBeanServerDelegate.DELEGATE_NAME;
 import static javax.management.MBeanServerNotification.REGISTRATION_NOTIFICATION;
 import static javax.management.MBeanServerNotification.UNREGISTRATION_NOTIFICATION;
 import static org.apache.commons.lang3.StringUtils.join;
+import static org.echocat.jomon.runtime.concurrent.ThreadUtils.stop;
 
 public class Jmx2CarbonBridge implements AutoCloseable {
 
@@ -259,7 +259,7 @@ public class Jmx2CarbonBridge implements AutoCloseable {
             final Iterator<Thread> i = _updatingThreads.iterator();
             while (i.hasNext()) {
                 final Thread thread = i.next();
-                stopThread(thread);
+                stop(thread);
                 i.remove();
             }
         }
@@ -269,9 +269,12 @@ public class Jmx2CarbonBridge implements AutoCloseable {
         if (thread != null) {
             thread.interrupt();
             try {
+                long tries = 0;
                 while (thread.isAlive()) {
-                    thread.join(SECONDS.toMillis(10));
-                    if (thread.isAlive()) {
+                    tries++;
+                    thread.join(50);
+                    thread.interrupt();
+                    if (thread.isAlive() && tries % 200 == 0) {
                         LOG.info("Still wait for termination of '" + thread + "'...");
                     }
                 }
