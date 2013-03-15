@@ -18,9 +18,9 @@ import org.echocat.jemoni.jmx.JmxRegistry;
 import org.echocat.jemoni.jmx.support.ServletHealth.*;
 import org.echocat.jomon.runtime.util.Duration;
 import org.echocat.jomon.runtime.util.Entry;
-import org.echocat.jomon.testing.TypeSafeMatcherWithActual;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -220,7 +220,7 @@ public class ServletHealthUnitTest {
 
     @Nonnull
     protected static Matcher<Entry<Pattern, ScopeMapping>> isEntry(@Nullable final String pattern, @Nullable final String defaultName) {
-        return new TypeSafeMatcherWithActual<Entry<Pattern,ScopeMapping>>() {
+        return new TypeSafeMatcher<Entry<Pattern,ScopeMapping>>() {
 
             @Override
             public boolean matchesSafely(Entry<Pattern, ScopeMapping> item) {
@@ -254,7 +254,7 @@ public class ServletHealthUnitTest {
             }
 
             @Override
-            public void describeExpectedTo(@Nonnull Description description, @Nullable Entry<Pattern, ScopeMapping> actual) {
+            protected void describeMismatchSafely(@Nullable Entry<Pattern, ScopeMapping> actual, @Nonnull Description description) {
                 if (actual != null) {
                     final String actualDefaultName = actual.getValue() != null ? actual.getValue().getDefaultName() : null;
                     description.appendText("entry with pattern ").appendValue(actual.getKey()).appendText(" and default name ").appendValue(actualDefaultName);
