@@ -23,10 +23,6 @@
         <option name="HTML_DO_NOT_INDENT_CHILDREN_OF" value="html" />
         <option name="JSP_PREFER_COMMA_SEPARATED_IMPORT_LIST" value="true" />
         <option name="WRAP_COMMENTS" value="true" />
-        <JSCodeStyleSettings>
-          <option name="INDENT_PACKAGE_CHILDREN" value="1" />
-          <option name="SPACES_NEAR_TYPE" value="2" />
-        </JSCodeStyleSettings>
         <XML>
           <option name="XML_KEEP_BLANK_LINES" value="1" />
           <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="true" />
@@ -53,14 +49,21 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="Groovy">
-          <option name="WRAP_COMMENTS" value="true" />
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="JAVA">
+          <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+          <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
+          <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
+          <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
           <option name="WRAP_COMMENTS" value="true" />
+          <option name="IF_BRACE_FORCE" value="3" />
+          <option name="DOWHILE_BRACE_FORCE" value="3" />
+          <option name="WHILE_BRACE_FORCE" value="3" />
+          <option name="FOR_BRACE_FORCE" value="3" />
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
           <indentOptions>
             <option name="CONTINUATION_INDENT_SIZE" value="4" />
