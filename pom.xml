@@ -4,7 +4,7 @@
   ~
   ~ Version: MPL 2.0
   ~
-  ~ echocat JeMoni, Copyright (c) 2012-2013 echocat
+  ~ echocat JeMoni, Copyright (c) 2012-2016 echocat
   ~
   ~ This Source Code Form is subject to the terms of the Mozilla Public
   ~ License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -149,6 +149,14 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                    <configuration>
+                        <keyname>echocat</keyname>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <!--suppress MavenModelInspection -->
                     <version>2.5</version>
@@ -199,7 +207,8 @@
                     <version>2.4</version>
                     <configuration>
                         <tagNameFormat>version-@{project.version}</tagNameFormat>
-                        <arguments>-DskipTests</arguments>
+                        <!--suppress MavenModelInspection -->
+                        <arguments>-DskipTests ${arguments}</arguments>
                         <scmCommentPrefix>* [RELEASE] </scmCommentPrefix>
                     </configuration>
                 </plugin>
@@ -236,6 +245,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -246,46 +268,16 @@
 
     <distributionManagement>
         <repository>
-            <id>echocat-jemoni-releases</id>
-            <url>dav:https://repo.echocat.org/jemoni-releases</url>
+            <id>oss-sonartype-releases</id>
+            <url>dav:https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
-        <snapshotRepository>
-            <id>echocat-jemoni-snapshots</id>
-            <url>dav:https://repo.echocat.org/jemoni-snapshots</url>
-        </snapshotRepository>
     </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>echocat</id>
-            <url>http://repo.echocat.org/all</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>echocat</id>
-            <url>http://repo.echocat.org/all</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <scm>
         <connection>scm:git:git@github.com:echocat/jemoni.git</connection>
         <developerConnection>scm:git:git@github.com:echocat/jemoni.git</developerConnection>
         <url>https://github.com/echocat/jemoni</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
 
 </project>

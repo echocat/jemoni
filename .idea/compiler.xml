@@ -36,18 +36,30 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
-      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+      <profile default="false" name="Annotation profile for org.echocat.jemoni.jmx" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="org.echocat.jemoni.jmx" />
+      </profile>
+      <profile default="false" name="Annotation profile for org.echocat.jemoni.carbon" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="org.echocat.jemoni.carbon" />
+      </profile>
+      <profile default="false" name="Annotation profile for org.echocat.jemoni.bundle" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="org.echocat.jemoni.bundle" />
-        <module name="org.echocat.jemoni.carbon" />
-        <module name="org.echocat.jemoni.jmx" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="org.echocat.jemoni" target="1.7" />
+      <module name="org.echocat.jemoni" target="1.5" />
       <module name="org.echocat.jemoni.bundle" target="1.7" />
       <module name="org.echocat.jemoni.carbon" target="1.7" />
       <module name="org.echocat.jemoni.jmx" target="1.7" />
@@ -57,4 +69,3 @@
     <option name="MAXIMUM_HEAP_SIZE" value="256" />
   </component>
 </project>
-
