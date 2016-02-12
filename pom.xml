@@ -21,7 +21,7 @@
     <groupId>org.echocat</groupId>
     <artifactId>jemoni</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.10-SNAPSHOT</version>
+    <version>0.1.10</version>
     <url>https://jemoni.echocat.org</url>
     <description>JeMoni is a toolset for monitoring JVMs. Generally it aims features around JMX.</description>
 
@@ -299,7 +299,7 @@
         <connection>scm:git:git@github.com:echocat/jemoni.git</connection>
         <developerConnection>scm:git:git@github.com:echocat/jemoni.git</developerConnection>
         <url>https://github.com/echocat/jemoni</url>
-        <tag>HEAD</tag>
+        <tag>version-0.1.10</tag>
   </scm>
 
 </project>
