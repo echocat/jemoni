@@ -23,6 +23,7 @@
     <packaging>pom</packaging>
     <version>0.1.10-SNAPSHOT</version>
     <url>https://jemoni.echocat.org</url>
+    <description>JeMoni is a toolset for monitoring JVMs. Generally it aims features around JMX.</description>
 
     <modules>
         <module>jmx</module>
@@ -245,6 +246,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--suppress MavenModelInspection -->
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
