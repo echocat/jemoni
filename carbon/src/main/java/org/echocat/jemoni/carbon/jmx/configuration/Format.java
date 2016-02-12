@@ -3,7 +3,7 @@
  *
  * Version: MPL 2.0
  *
- * echocat JeMoni, Copyright (c) 2012-2013 echocat
+ * echocat JeMoni, Copyright (c) 2012-2016 echocat
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,9 +17,7 @@ package org.echocat.jemoni.carbon.jmx.configuration;
 import org.echocat.jomon.runtime.jaxb.PatternAdapter;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.List;
 import java.util.regex.Matcher;

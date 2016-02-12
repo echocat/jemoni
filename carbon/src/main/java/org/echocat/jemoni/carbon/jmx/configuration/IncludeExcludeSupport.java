@@ -3,7 +3,7 @@
  *
  * Version: MPL 2.0
  *
- * echocat JeMoni, Copyright (c) 2012-2013 echocat
+ * echocat JeMoni, Copyright (c) 2012-2016 echocat
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,19 +27,19 @@ public abstract class IncludeExcludeSupport<T extends IncludeExcludeSupport<T>> 
     private List<ObjectRule> _includes;
     private List<ObjectRule> _excludes;
 
-    public List<ObjectRule> getIncludes() {
+    protected List<ObjectRule> getIncludes() {
         return _includes;
     }
 
-    public void setIncludes(List<ObjectRule> includes) {
+    protected void setIncludes(List<ObjectRule> includes) {
         _includes = includes;
     }
 
-    public List<ObjectRule> getExcludes() {
+    protected List<ObjectRule> getExcludes() {
         return _excludes;
     }
 
-    public void setExcludes(List<ObjectRule> excludes) {
+    protected void setExcludes(List<ObjectRule> excludes) {
         _excludes = excludes;
     }
 
