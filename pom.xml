@@ -77,6 +77,12 @@
                 <groupId>org.echocat.jomon.net</groupId>
                 <artifactId>common</artifactId>
                 <version>${versions.org.echocat.jomon}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.xbill</groupId>
+                        <artifactId>DNS</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.echocat.jomon.net</groupId>
