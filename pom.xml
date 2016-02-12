@@ -42,6 +42,15 @@
         <name>echocat</name>
     </organization>
 
+    <developers>
+        <developer>
+            <id>gregor.noczinski</id>
+            <name>Gregor Noczinski</name>
+            <url>https://github.com/blaubaer</url>
+            <email>gregor@noczinski.eu</email>
+        </developer>
+    </developers>
+
     <properties>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
