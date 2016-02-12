@@ -235,13 +235,7 @@ h1. Links
 
 h1. Use with Maven
 
-bc. <repositories>
-    <repository>
-        <id>echocat</id>
-        <url>http://repo.echocat.org/echocat</url>
-    </repository>
-</repositories>
-<dependencies>
+bc. <dependencies>
     <dependency>
         <groupId>org.echocat.jemoni</groupId>
         <artifactId>jmx</artifactId>
@@ -254,7 +248,7 @@ bc. <repositories>
     </dependency>
 </dependencies>
 
-"Find out what are the possible versions or what is the latest version.":http://repo.echocat.org/echocat/org/echocat/jemoni/
+"Find out what are the possible versions or what is the latest version.":http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.echocat.jemoni%22
 
 h1. License
 
