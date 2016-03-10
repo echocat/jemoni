@@ -21,7 +21,7 @@
     <groupId>org.echocat</groupId>
     <artifactId>jemoni</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.11-SNAPSHOT</version>
+    <version>0.1.12-SNAPSHOT</version>
     <url>https://jemoni.echocat.org</url>
     <description>JeMoni is a toolset for monitoring JVMs. Generally it aims features around JMX.</description>
 
