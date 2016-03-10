@@ -67,6 +67,16 @@
                 <groupId>org.echocat.jomon</groupId>
                 <artifactId>runtime</artifactId>
                 <version>${versions.org.echocat.jomon}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.googlecode.libphonenumber</groupId>
+                        <artifactId>libphonenumber</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.echocat.jomon</groupId>
